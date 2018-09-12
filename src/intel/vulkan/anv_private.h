@@ -952,6 +952,7 @@ struct anv_pipeline_cache {
    struct hash_table *                          cache;
 };
 
+struct nir_xfb_info;
 struct anv_pipeline_bind_map;
 
 void anv_pipeline_cache_init(struct anv_pipeline_cache *cache,
@@ -970,6 +971,7 @@ anv_pipeline_cache_upload_kernel(struct anv_pipeline_cache *cache,
                                  uint32_t constant_data_size,
                                  const struct brw_stage_prog_data *prog_data,
                                  uint32_t prog_data_size,
+                                 const struct nir_xfb_info *xfb_info,
                                  const struct anv_pipeline_bind_map *bind_map);
 
 struct anv_shader_bin *
@@ -986,6 +988,7 @@ anv_device_upload_kernel(struct anv_device *device,
                          uint32_t constant_data_size,
                          const struct brw_stage_prog_data *prog_data,
                          uint32_t prog_data_size,
+                         const struct nir_xfb_info *xfb_info,
                          const struct anv_pipeline_bind_map *bind_map);
 
 struct nir_shader;
@@ -2410,6 +2413,8 @@ struct anv_shader_bin {
    const struct brw_stage_prog_data *prog_data;
    uint32_t prog_data_size;
 
+   struct nir_xfb_info *xfb_info;
+
    struct anv_pipeline_bind_map bind_map;
 };
 
@@ -2420,6 +2425,7 @@ anv_shader_bin_create(struct anv_device *device,
                       const void *constant_data, uint32_t constant_data_size,
                       const struct brw_stage_prog_data *prog_data,
                       uint32_t prog_data_size, const void *prog_data_param,
+                      const struct nir_xfb_info *xfb_info,
                       const struct anv_pipeline_bind_map *bind_map);
 
 void
