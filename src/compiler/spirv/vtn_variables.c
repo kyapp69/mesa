@@ -2027,11 +2027,23 @@ vtn_create_variable(struct vtn_builder *b, struct vtn_value *val,
       var->var = rzalloc(b->shader, nir_variable);
       var->var->name = ralloc_strdup(var->var, val->name);
       var->var->type = var->type->type;
-      var->var->interface_type = interface_type->type;
       var->var->data.mode = nir_mode;
       var->var->data.patch = var->patch;
 
+      /* Previous case will not set the interface type for all cases where we
+       * have an array, because we are not interested on splitting (below) all
+       * those cases. But we want to set the nir interface type for all those
+       * cases, because after spirv to nir some passes would want to be able
+       * to differentiate array of blocks from array of structs.
+       */
+      if (vtn_type_contains_block(b, var->type)) {
+         var->var->interface_type = var->type->array_element->type;
+      }
+
       if (glsl_type_is_struct(interface_type->type)) {
+         if (interface_type->block)
+            var->var->interface_type = interface_type->type;
+
          /* It's a struct.  Set it up as per-member. */
          var->var->num_members = glsl_get_length(interface_type->type);
          var->var->members = rzalloc_array(var->var, struct nir_variable_data,
